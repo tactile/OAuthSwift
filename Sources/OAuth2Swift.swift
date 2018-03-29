@@ -20,7 +20,7 @@ open class OAuth2Swift: OAuthSwift {
     /// Encode callback url, some services require it to be encoded.
     open var encodeCallbackURL: Bool = false
 
-    /// Encode callback url inside the query, this is second encoding phase when the entire query string gets assembled. In rare 
+    /// Encode callback url inside the query, this is second encoding phase when the entire query string gets assembled. In rare
     /// cases, like with Imgur, the url needs to be encoded only once and this value needs to be set to `false`.
     open var encodeCallbackURLQuery: Bool = true
 
@@ -56,15 +56,15 @@ open class OAuth2Swift: OAuthSwift {
 
     public convenience init?(parameters: ConfigParameters) {
         guard let consumerKey = parameters["consumerKey"], let consumerSecret = parameters["consumerSecret"],
-              let responseType = parameters["responseType"], let authorizeUrl = parameters["authorizeUrl"] else {
-            return nil
+            let responseType = parameters["responseType"], let authorizeUrl = parameters["authorizeUrl"] else {
+                return nil
         }
         if let accessTokenUrl = parameters["accessTokenUrl"] {
             self.init(consumerKey: consumerKey, consumerSecret: consumerSecret,
-                authorizeUrl: authorizeUrl, accessTokenUrl: accessTokenUrl, responseType: responseType)
+                      authorizeUrl: authorizeUrl, accessTokenUrl: accessTokenUrl, responseType: responseType)
         } else {
             self.init(consumerKey: consumerKey, consumerSecret: consumerSecret,
-                authorizeUrl: authorizeUrl, responseType: responseType)
+                      authorizeUrl: authorizeUrl, responseType: responseType)
         }
     }
 
@@ -128,10 +128,10 @@ open class OAuth2Swift: OAuthSwift {
             } else if let error = responseParameters["error"] {
                 let description = responseParameters["error_description"] ?? ""
                 let message = NSLocalizedString(error, comment: description)
-                failure?(OAuthSwiftError.serverError(message: message))
+                failure?(OAuthSwiftError.errorParser(responseParameters, message))
             } else {
                 let message = "No access_token, no code and no error provided by server"
-                failure?(OAuthSwiftError.serverError(message: message))
+                failure?(OAuthSwiftError.errorParser(nil, message))
             }
         }
 
@@ -220,7 +220,7 @@ open class OAuth2Swift: OAuthSwift {
 
             guard let accessToken = responseParameters["access_token"] as? String else {
                 let message = NSLocalizedString("Could not get Access Token", comment: "Due to an error in the OAuth2 process, we couldn't get a valid token.")
-                failure?(OAuthSwiftError.serverError(message: message))
+                failure?(OAuthSwiftError.errorParser(nil, message))
                 return
             }
 
@@ -267,7 +267,7 @@ open class OAuth2Swift: OAuthSwift {
      Convenience method to start a request that must be authorized with the previously retrieved access token.
      Since OAuth 2 requires support for the access token refresh mechanism, this method will take care to automatically
      refresh the token if needed such that the developer only has to be concerned about the outcome of the request.
-     
+
      - parameter url:            The url for the request.
      - parameter method:         The HTTP method to use.
      - parameter parameters:     The request's parameters.
@@ -359,3 +359,4 @@ open class OAuth2Swift: OAuthSwift {
         return authorize(withCallbackURL: callbackURL, scope: scope, state: state, parameters: parameters + pkceParameters, headers: headers, success: success, failure: failure)
     }
 }
+
