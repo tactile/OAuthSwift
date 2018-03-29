@@ -81,13 +81,13 @@ public enum OAuthSwiftError: Error {
         }
     }
 
-    public var underlyingError: Error? {
+    public var underlyingError: NSError? {
         switch self {
-        case .tokenExpired(let e): return e
-        case .requestError(let e, _): return e
-        case .authorizationPending(let e, _): return e
-        case .slowDown(let e, _): return e
-        case .accessDenied(let e, _): return e
+        case .tokenExpired(let e): return e as NSError?
+        case .requestError(let e, _): return e as NSError?
+        case .authorizationPending(let e, _): return e as NSError?
+        case .slowDown(let e, _): return e as NSError?
+        case .accessDenied(let e, _): return e as NSError?
         default: return nil
         }
     }
@@ -100,7 +100,6 @@ public enum OAuthSwiftError: Error {
         default: return nil
         }
     }
-
 }
 
 extension OAuthSwiftError: CustomStringConvertible {
@@ -140,6 +139,22 @@ extension OAuthSwiftError: CustomNSError {
 
     public static var errorDomain: String { return OAuthSwiftError.Domain }
 
+    public static var errorParser: ([String: String]?, String) -> OAuthSwiftError = {userInfo, message in
+        var URLdecodedUserInfo = [String: String]()
+
+        if let userInfoVal = userInfo {
+            for (key, value) in userInfoVal {
+                URLdecodedUserInfo[key] = value.safeStringByRemovingPercentEncoding
+            }
+        }
+
+        let serverError = OAuthSwiftError.serverError(message: message)
+        let underlyingError = NSError(domain: serverError._domain, code: serverError._code, userInfo: URLdecodedUserInfo)
+
+        let requestError: OAuthSwiftError = OAuthSwiftError.requestError(error: underlyingError as Error, request: nil)
+        return requestError
+    }
+
     public var errorCode: Int { return self.code.rawValue }
 
     /// The user-info dictionary.
@@ -169,3 +184,4 @@ extension OAuthSwiftError: CustomNSError {
         return OAuthSwiftError.Domain
     }
 }
+

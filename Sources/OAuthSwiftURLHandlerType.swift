@@ -31,7 +31,7 @@ open class OAuthSwiftOpenURLExternally: OAuthSwiftURLHandlerType {
                 UIApplication.shared.openURL(url)
             #endif
         #elseif os(watchOS)
-        // WATCHOS: not implemented
+            // WATCHOS: not implemented
         #elseif os(OSX)
             NSWorkspace.shared.open(url)
         #endif
@@ -102,6 +102,8 @@ import AuthenticationServices
     @available(iOS 9.0, *)
     open class SafariURLHandler: NSObject, OAuthSwiftURLHandlerType, SFSafariViewControllerDelegate {
 
+        static let kSafariViewControllerDidCancel = "safariViewControllerDidCancel"
+
         public typealias UITransion = (_ controller: SFSafariViewController, _ handler: SafariURLHandler) -> Void
 
         weak open var oauthSwift: OAuthSwift?
@@ -122,7 +124,7 @@ import AuthenticationServices
         open var animated: Bool = true
         open var presentCompletion: (() -> Void)?
         open var dismissCompletion: (() -> Void)?
-        open var delay: UInt32? = 1
+        open var delay: UInt32? = 0
 
         /// init
         public init(viewController: UIViewController, oauthSwift: OAuthSwift) {
@@ -197,6 +199,7 @@ import AuthenticationServices
 
         public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
             // "Done" pressed
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: SafariURLHandler.kSafariViewControllerDidCancel), object: nil)
             self.clearObservers()
             self.delegate?.safariViewControllerDidFinish?(controller)
         }
