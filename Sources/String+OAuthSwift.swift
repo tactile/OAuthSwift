@@ -78,7 +78,11 @@ extension String {
     }
 
     var safeStringByRemovingPercentEncoding: String {
-        return self.removingPercentEncoding ?? self
+        if var encodedString = self.removingPercentEncoding {
+            encodedString = encodedString.replacingOccurrences(of: "+", with: " ")
+            return encodedString
+        }
+        return self
     }
 
     var droppedLast: String {
