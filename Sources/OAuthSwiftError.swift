@@ -139,7 +139,7 @@ extension OAuthSwiftError: CustomNSError {
 
     public static var errorDomain: String { return OAuthSwiftError.Domain }
 
-    public static var errorParser: ([String: String]?, String) -> OAuthSwiftError = {userInfo, message in
+    public static var parseError: ([String: String]?, String) -> OAuthSwiftError = {userInfo, message in
         var URLdecodedUserInfo = [String: String]()
 
         if let userInfoVal = userInfo {

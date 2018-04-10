@@ -128,10 +128,10 @@ open class OAuth2Swift: OAuthSwift {
             } else if let error = responseParameters["error"] {
                 let description = responseParameters["error_description"] ?? ""
                 let message = NSLocalizedString(error, comment: description)
-                failure?(OAuthSwiftError.errorParser(responseParameters, message))
+                failure?(OAuthSwiftError.parseError(responseParameters, message))
             } else {
                 let message = "No access_token, no code and no error provided by server"
-                failure?(OAuthSwiftError.errorParser(nil, message))
+                failure?(OAuthSwiftError.parseError(nil, message))
             }
         }
 
@@ -220,7 +220,7 @@ open class OAuth2Swift: OAuthSwift {
 
             guard let accessToken = responseParameters["access_token"] as? String else {
                 let message = NSLocalizedString("Could not get Access Token", comment: "Due to an error in the OAuth2 process, we couldn't get a valid token.")
-                failure?(OAuthSwiftError.errorParser(nil, message))
+                failure?(OAuthSwiftError.parseError(nil, message))
                 return
             }
 
