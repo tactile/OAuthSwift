@@ -78,11 +78,11 @@ extension String {
     }
 
     var safeStringByRemovingPercentEncoding: String {
-        if var encodedString = self.removingPercentEncoding {
-            encodedString = encodedString.replacingOccurrences(of: "+", with: " ")
+        let urlEncodedString = self.replacingOccurrences(of: "+", with: " ")
+        if let encodedString = urlEncodedString.removingPercentEncoding {
             return encodedString
         }
-        return self
+        return urlEncodedString
     }
 
     var droppedLast: String {
