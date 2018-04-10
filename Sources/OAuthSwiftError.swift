@@ -31,7 +31,7 @@ public enum OAuthSwiftError: Error {
     case cancelled
 
     /// Generic request error
-    case requestError(error: Error, request: URLRequest)
+    case requestError(error: Error, request: URLRequest?)
     /// The provided token is expired, retrieve new token by using the refresh token
     case tokenExpired(error: Error?)
     /// If the user has not either allowed or denied the request yet, the authorization server will return the authorization_pending error.
@@ -139,7 +139,7 @@ extension OAuthSwiftError: CustomNSError {
 
     public static var errorDomain: String { return OAuthSwiftError.Domain }
 
-    public static var errorParser: ([String: String]?, String) -> OAuthSwiftError = {userInfo, message in
+    public static var parseError: ([String: String]?, String) -> OAuthSwiftError = {userInfo, message in
         var URLdecodedUserInfo = [String: String]()
 
         if let userInfoVal = userInfo {
