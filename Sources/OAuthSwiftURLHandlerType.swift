@@ -226,3 +226,13 @@ open class ExtensionContextURLHandler: OAuthSwiftURLHandlerType {
     }
 }
 
+// MARK: Proxy
+class OAuthSwiftURLHandlerProxy: OAuthSwiftURLHandlerType {
+    weak var proxiable: OAuthSwiftURLHandlerType?
+    init(_ proxiable: OAuthSwiftURLHandlerType) {
+        self.proxiable = proxiable
+    }
+    func handle(_ url: URL) {
+        proxiable?.handle(url)
+    }
+}
