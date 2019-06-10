@@ -161,7 +161,7 @@ import AuthenticationServices
             let key = UUID().uuidString
 
             observers[key] = OAuthSwift.notificationCenter.addObserver(
-                forName: NSNotification.Name.OAuthSwiftHandleCallbackURL,
+                forName: OAuthSwift.didHandleCallbackURL,
                 object: nil,
                 queue: OperationQueue.main,
                 using: { [weak self] _ in
