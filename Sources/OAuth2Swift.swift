@@ -129,7 +129,7 @@ open class OAuth2Swift: OAuthSwift {
                     let description = responseParameters["error_description"] ?? ""
                     let message = NSLocalizedString(error, comment: description)
                     OAuthSwift.log?.error("Authorization failed with: \(description)")
-                    completion(.failure(.serverError(message: message)))
+                    completion(.failure(OAuthSwiftError.parseError(responseParameters, message)))
                 }
 
                 // handling SFAuthenticationSession/ASWebAuthenticationSession canceledLogin errors
@@ -258,7 +258,7 @@ open class OAuth2Swift: OAuthSwift {
     @discardableResult
     open func startAuthorizedRequest(_ url: URLConvertible, method: OAuthSwiftHTTPRequest.Method, parameters: OAuthSwift.Parameters, headers: OAuthSwift.Headers? = nil, renewHeaders: OAuthSwift.Headers? = nil, body: Data? = nil, onTokenRenewal: TokenRenewedHandler? = nil, completionHandler completion: @escaping OAuthSwiftHTTPRequest.CompletionHandler) -> OAuthSwiftRequestHandle? {
 
-        OAuthSwift.log?.trace("Start authorized request, url: \(url.url?.absoluteString) ...")
+        OAuthSwift.log?.trace("Start authorized request, url: \(url.url?.absoluteString ?? "unknown") ...")
         let completionHandler: OAuthSwiftHTTPRequest.CompletionHandler = { result in
             switch result {
             case .success:

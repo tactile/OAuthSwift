@@ -114,7 +114,11 @@ extension String {
     }
 
     var safeStringByRemovingPercentEncoding: String {
-        return self.removingPercentEncoding ?? self
+        let urlEncodedString = self.replacingOccurrences(of: "+", with: " ")
+        if let encodedString = urlEncodedString.removingPercentEncoding {
+            return encodedString
+        }
+        return urlEncodedString
     }
 
     mutating func dropLast() {
