@@ -145,6 +145,26 @@ extension OAuthSwiftError: CustomNSError {
 
     public var errorCode: Int { return self.code.rawValue }
 
+    public static var parseError: ([String: String]?, String) -> OAuthSwiftError = {userInfo, message in
+        var URLdecodedUserInfo = [String: String]()
+
+        if let userInfoVal = userInfo {
+            for (key, value) in userInfoVal {
+                URLdecodedUserInfo[key] = value.safeStringByRemovingPercentEncoding
+            }
+        }
+
+        let serverError = OAuthSwiftError.serverError(message: message)
+        
+        if let url = URL(string: "https://") {
+            let underlyingError = NSError(domain: serverError._domain, code: serverError._code, userInfo: URLdecodedUserInfo)
+            let requestError: OAuthSwiftError = OAuthSwiftError.requestError(error: underlyingError as Error, request: URLRequest(url: url))
+            return requestError
+        } else {
+            return serverError
+        }
+    }
+
     /// The user-info dictionary.
     public var errorUserInfo: [String: Any] {
         switch self {
